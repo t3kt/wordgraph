@@ -12,15 +12,26 @@ starting with a word, look at the words used in its definition recursively to cr
 * given a startWord and maxDistance
 * process startWord (see below), with dist=0
 
-### process for each word, with dist=distance from startWord
-* look up node for word in wordTable
-* if node already exists, skip
+### process for each word, with currentDist=distance from startWord
+* look up currentNode for word in wordTable
+* if currentNode already exists, skip
 * get definition of word
 * split and normalize the definition into defWords
 * for each defWord:
   * look up defNode for defWord
   * if defNode is not found:
-    * if dist >= maxDistance:
-      * insert a placeholder node into the table
-  * if defNode is found and is a real node:
-    * ...
+    * if currentDist >= maxDistance:
+      * insert a placeholder node into the table, including currentDist
+      * set defNode = the placeholder
+    * else (dist < maxDistance):
+      * look up and process the defWord, with dist = currentDist - 1
+      * set defNode = the resulting node
+  * else if defNode is found:
+    * if defNode is a real node:
+      * add a link in currentNode pointing to defNode
+      * set defNode.dist = min(defNode.dist, currentDist)
+    * else (defNode is a placeholder):
+      * if currentDist < maxDistance:
+        * look up defWord and replace the placeholder with the resulting node
+        * add a link in currentNode pointing to defNode
+    
